@@ -6,6 +6,7 @@ correct decision logic across every gate (send / revise / reject).
 import ast
 import inspect
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -338,6 +339,34 @@ def test_cli_roundtrip_on_samples():
         assert proc.returncode == 0, proc.stderr
         result = json.loads(proc.stdout)
         _assert_valid_report(result)
+
+
+def test_cli_organ_input_as_file_path():
+    """ORGAN_INPUT may be a path to a sample file (fleet verify convention)."""
+    sample = ROOT / "samples" / "ready_proposal_send.json"
+    proc = subprocess.run(
+        [sys.executable, str(ROOT / "organ.py")],
+        input="",  # empty stdin → fall through to ORGAN_INPUT
+        capture_output=True, text=True,
+        env={**os.environ, "ORGAN_INPUT": str(sample)},
+    )
+    assert proc.returncode == 0, proc.stderr
+    result = json.loads(proc.stdout)
+    _assert_valid_report(result)
+    assert result["output"]["decision"] == "send", result
+
+
+def test_cli_organ_input_as_inline_json():
+    """ORGAN_INPUT still accepts inline JSON when it is not a file path."""
+    proc = subprocess.run(
+        [sys.executable, str(ROOT / "organ.py")],
+        input="",
+        capture_output=True, text=True,
+        env={**os.environ, "ORGAN_INPUT": "{\"state\": {}, \"context\": {}}"},
+    )
+    assert proc.returncode == 0, proc.stderr
+    result = json.loads(proc.stdout)
+    _assert_valid_report(result)
 
 
 def test_sample_decisions_match_filenames():

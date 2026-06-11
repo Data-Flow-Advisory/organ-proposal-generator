@@ -363,7 +363,16 @@ def _read_input() -> Dict[str, Any]:
     text = sys.stdin.read()
     if not text.strip():
         import os
-        text = os.getenv("ORGAN_INPUT", "{}")
+        raw = os.getenv("ORGAN_INPUT", "{}")
+        # ORGAN_INPUT may be either a path to a JSON file or inline JSON. Prefer
+        # the file-path reading so an organ can be exercised with
+        # ``ORGAN_INPUT=samples/foo.json`` (the fleet's conventional verify
+        # path), falling back to treating the value as inline JSON.
+        if os.path.isfile(raw):
+            with open(raw, "r", encoding="utf-8") as fh:
+                text = fh.read()
+        else:
+            text = raw
     data = json.loads(text)
     return data if isinstance(data, dict) else {}
 
