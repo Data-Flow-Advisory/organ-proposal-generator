@@ -1,0 +1,24 @@
+{
+  "state": {
+    "proposal": {
+      "exec_summary": "DataFlow will cut Acme's invoice-matching cycle from 9 days to under 2, recovering ~£40k/yr in finance-team time.",
+      "problem_statement": "Acme's finance team spends 9 days a month manually matching POs, GRNs and invoices, per the Head of Finance.",
+      "solution": "An automated three-way-match module that flags exceptions and clears clean matches without human touch.",
+      "roi_case": "7 days saved per cycle at the rate quoted in discovery (~£40k/yr); payback inside the first quarter.",
+      "evidence_links": [
+        {"interview_id": 12, "question_id": 4},
+        {"interview_id": 12, "question_id": 7},
+        {"interview_id": 15, "question_id": 2}
+      ],
+      "version": "json_v1"
+    },
+    "available_excerpts": [
+      {"interview_id": 12, "question_id": 4, "question": "How long does invoice matching take?", "answer": "About 9 days a month, all manual."},
+      {"interview_id": 12, "question_id": 7, "question": "What would that time be worth?", "answer": "Easily £40k a year in salary."},
+      {"interview_id": 15, "question_id": 2, "question": "Who owns the process?", "answer": "The finance team, three people part-time."}
+    ],
+    "min_evidence_links": 1,
+    "require_grounding": true
+  },
+  "context": {"reason": "Stage-2 draft complete; gating before delivery to Acme."}
+}

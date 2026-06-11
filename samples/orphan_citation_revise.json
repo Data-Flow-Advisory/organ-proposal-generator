@@ -1,0 +1,21 @@
+{
+  "state": {
+    "proposal": {
+      "exec_summary": "DataFlow will halve Gamma Co's onboarding time.",
+      "problem_statement": "New-hire onboarding takes 3 weeks of manual checklist chasing.",
+      "solution": "A guided onboarding workflow with automated reminders.",
+      "roi_case": "Saves 60 hours of HR admin per hire, citing the figure HR gave us.",
+      "evidence_links": [
+        {"interview_id": 30, "question_id": 2},
+        {"interview_id": 999, "question_id": 1}
+      ],
+      "version": "json_v1"
+    },
+    "available_excerpts": [
+      {"interview_id": 30, "question_id": 2, "question": "How long is onboarding?", "answer": "Three weeks of chasing checklists."}
+    ],
+    "min_evidence_links": 1,
+    "require_grounding": true
+  },
+  "context": {"reason": "roi_case cites interview 999 which is NOT in the discovery pool — a hallucinated source the grounding gate must catch."}
+}

@@ -1,0 +1,20 @@
+{
+  "state": {
+    "proposal": {
+      "exec_summary": "DataFlow will streamline Beta Ltd's quote-to-cash flow.",
+      "problem_statement": "Quotes take 4 days to turn around because pricing lives in three spreadsheets.",
+      "solution": "A single pricing engine with approval routing.",
+      "roi_case": "",
+      "evidence_links": [
+        {"interview_id": 21, "question_id": 1}
+      ],
+      "version": "json_v1"
+    },
+    "available_excerpts": [
+      {"interview_id": 21, "question_id": 1, "question": "How long do quotes take?", "answer": "Four days, because pricing is scattered across spreadsheets."}
+    ],
+    "min_evidence_links": 1,
+    "require_grounding": true
+  },
+  "context": {"reason": "AI left roi_case empty; should bounce back for a revision pass, not be sent."}
+}
