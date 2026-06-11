@@ -351,3 +351,62 @@ def test_sample_decisions_match_filenames():
         data = json.loads((ROOT / "samples" / f"{name}.json").read_text())
         result = decide(data.get("state") or {}, data.get("context") or {})
         assert result["output"]["decision"] == decision, (name, result)
+
+
+# ---------------------------------------------------------------------------
+# Connection-standard ports (CONNECTORS.md) — ports.json + vocabulary + I/O.
+# ---------------------------------------------------------------------------
+
+class TestPorts:
+    """The Lego-stud half of conformance: ports.json declares typed studs that
+    match the shared vocabulary and the organ's real decide() I/O."""
+
+    def _ports(self):
+        return json.loads((ROOT / "ports.json").read_text())
+
+    def _vocab_types(self):
+        return set((json.loads((ROOT / "types.json").read_text()).get("types") or {}).keys())
+
+    def test_ports_json_parses_with_standard_shape(self):
+        ports = self._ports()
+        assert isinstance(ports.get("inputs"), list)
+        assert isinstance(ports.get("outputs"), list)
+        for port in ports["inputs"]:
+            assert {"name", "type", "required"} <= set(port)
+            assert isinstance(port["required"], bool)
+        for port in ports["outputs"]:
+            assert {"name", "type"} <= set(port)
+
+    def test_every_port_type_exists_in_vocabulary(self):
+        ports = self._ports()
+        known = self._vocab_types()
+        for port in ports["inputs"] + ports["outputs"]:
+            assert port["type"] in known, f"{port['type']} not in types.json"
+
+    def test_decide_reads_each_declared_input_name(self):
+        ports = self._ports()
+        seen = set()
+        for p in sorted((ROOT / "samples").glob("*.json")):
+            st = json.loads(p.read_text()).get("state") or {}
+            if "proposal" in st:
+                seen.update(st.keys())
+        for port in ports["inputs"]:
+            assert port["name"] in seen, f"input {port['name']} never present in a sample state"
+
+    def test_decide_writes_each_declared_output_name(self):
+        ports = self._ports()
+        for p in sorted((ROOT / "samples").glob("*.json")):
+            doc = json.loads(p.read_text())
+            st = doc.get("state") or {}
+            if "proposal" not in st:
+                continue
+            out = decide(st, doc.get("context") or {})["output"]
+            for port in ports["outputs"]:
+                assert port["name"] in out, f"output {port['name']} absent on {p.name}"
+
+    def test_ports_check_script_passes(self):
+        proc = subprocess.run(
+            [sys.executable, str(ROOT / "ports_check.py")],
+            capture_output=True, text=True,
+        )
+        assert proc.returncode == 0, proc.stdout + proc.stderr

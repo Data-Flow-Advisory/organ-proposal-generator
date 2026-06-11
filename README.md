@@ -121,6 +121,36 @@ python organ.py < samples/ready_proposal_send.json
 | `samples/missing_section_revise.json` | `revise` (empty `roi_case`) |
 | `samples/orphan_citation_revise.json` | `revise` (cites interview not in pool) |
 
+## Ports (the connection standard)
+
+Per [`CONNECTORS.md`](https://raw.githubusercontent.com/Data-Flow-Advisory/orchestrator/feat/drift-gate/CONNECTORS.md),
+`ports.json` declares this organ's typed studs — the wiring addresses by which a
+composer snaps it to other organs:
+
+| Direction | Port (`state`/`output` key) | Type | Required |
+|-----------|-----------------------------|------|----------|
+| input | `proposal` | `Proposal` | yes |
+| input | `available_excerpts` | `DiscoveryExcerpts` | no |
+| output | `decision` | `ProposalVerdict` | — |
+| output | `missing_sections` | `ProposalVerdict` | — |
+| output | `orphan_citations` | `ProposalVerdict` | — |
+| output | `blockers` | `ProposalVerdict` | — |
+
+The four output ports are the named fields of the single `ProposalVerdict` the
+organ emits. The three tuning/control knobs (`required_sections`,
+`min_evidence_links`, `require_grounding`) are configuration, not composition
+wires, so they are intentionally **not** declared as ports.
+
+`Proposal`, `DiscoveryExcerpts` and `ProposalVerdict` are **proposed** additions
+to the shared vocabulary (proposal generation is a Stream 39 domain the
+discovery→blueprint spine vocabulary doesn't yet cover) — marked `proposed: true`
+in `types.json` (a vendored snapshot of the orchestrator vocabulary so
+conformance can validate offline) and awaiting upstream review.
+
+`ports_check.py` (run as a `conformance` step) asserts `ports.json` parses, every
+referenced type exists in `types.json`, and `decide()` actually reads each
+declared input name and writes each declared output name across the samples.
+
 ## Tests
 
 ```bash
@@ -129,8 +159,9 @@ pytest test_organ.py -v
 ```
 
 The `conformance` GitHub Action runs the suite on Python 3.10–3.12, plus
-explicit signature / fail-safe / determinism / stdlib-only checks, and prints
-each sample's decision to the job summary.
+explicit signature / fail-safe / determinism / stdlib-only checks, the
+`ports_check.py` connection-standard gate, and prints each sample's decision to
+the job summary.
 
 ## Provenance
 
