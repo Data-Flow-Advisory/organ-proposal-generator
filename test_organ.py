@@ -351,3 +351,42 @@ def test_sample_decisions_match_filenames():
         data = json.loads((ROOT / "samples" / f"{name}.json").read_text())
         result = decide(data.get("state") or {}, data.get("context") or {})
         assert result["output"]["decision"] == decision, (name, result)
+
+
+# ---------------------------------------------------------------------------
+# Ports connection standard
+# ---------------------------------------------------------------------------
+
+def test_check_ports_passes():
+    """The ports conformance check (check_ports.py) must exit 0."""
+    proc = subprocess.run(
+        [sys.executable, str(ROOT / "check_ports.py")],
+        capture_output=True, text=True,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+def test_ports_json_well_formed():
+    ports = json.loads((ROOT / "ports.json").read_text())
+    assert set(ports) == {"inputs", "outputs"}
+    vocab = set(json.loads((ROOT / "types.json").read_text())["types"])
+    for port in ports["inputs"]:
+        assert {"name", "type", "required"} <= set(port)
+        assert isinstance(port["required"], bool)
+        assert port["type"] in vocab
+    for port in ports["outputs"]:
+        assert {"name", "type"} <= set(port)
+        assert port["type"] in vocab
+
+
+def test_ports_match_decide_contract():
+    """ports.json names line up with what decide() actually reads / writes."""
+    ports = json.loads((ROOT / "ports.json").read_text())
+    declared_inputs = {p["name"] for p in ports["inputs"]}
+    declared_outputs = {p["name"] for p in ports["outputs"]}
+    assert declared_inputs == {
+        "proposal", "available_excerpts", "required_sections",
+        "min_evidence_links", "require_grounding",
+    }
+    out = decide({}, {})["output"]
+    assert set(out) == declared_outputs
