@@ -1,0 +1,13 @@
+{
+  "_README": "The typed studs for organ-proposal-generator (the Lego coupling — see CONNECTORS.md). `inputs[].name` is the literal key decide() reads under `state`; `outputs[].name` is the literal key decide() writes under `output`. `type` names a connection type from the shared vocabulary (types.json). Only the genuine composition wires are declared here: `proposal` (the generated document under judgment) and `available_excerpts` (the discovery evidence pool grounding is checked against). decide() also reads three tuning/control knobs from state — `required_sections` (which sections must be present), `min_evidence_links` (the grounding floor) and `require_grounding` (whether to enforce the evidence gate at all) — but those are configuration, not data wires meant to be composed, so they are intentionally NOT declared as ports (mirroring how a sibling organ excludes its `overlap_threshold` tuning knob). The four output ports (decision / missing_sections / orphan_citations / blockers) are the named fields of the single ProposalVerdict the organ emits: a consumer reads `decision` to gate the send and the other three to explain it. Three of the types referenced (Proposal, DiscoveryExcerpts, ProposalVerdict) are proposed additions to the vocabulary (marked `proposed` in types.json) pending upstream review — proposal generation (Stream 39) is a domain the discovery→blueprint spine vocabulary doesn't yet cover.",
+  "inputs": [
+    {"name": "proposal", "type": "Proposal", "required": true},
+    {"name": "available_excerpts", "type": "DiscoveryExcerpts", "required": false}
+  ],
+  "outputs": [
+    {"name": "decision", "type": "ProposalVerdict"},
+    {"name": "missing_sections", "type": "ProposalVerdict"},
+    {"name": "orphan_citations", "type": "ProposalVerdict"},
+    {"name": "blockers", "type": "ProposalVerdict"}
+  ]
+}

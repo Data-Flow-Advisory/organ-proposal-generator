@@ -84,6 +84,9 @@ jobs:
       - name: Run pytest suite
         run: python -m pytest test_organ.py -v --tb=short
 
+      - name: Ports — ports.json declares typed studs that match the vocabulary and decide()'s real I/O
+        run: python3 ports_check.py
+
       - name: Run organ against samples
         run: |
           set -euo pipefail
