@@ -1,0 +1,15 @@
+{
+  "inputs": [
+    {"name": "proposal", "type": "object", "required": false},
+    {"name": "available_excerpts", "type": "array", "required": false},
+    {"name": "required_sections", "type": "array", "required": false},
+    {"name": "min_evidence_links", "type": "integer", "required": false},
+    {"name": "require_grounding", "type": "boolean", "required": false}
+  ],
+  "outputs": [
+    {"name": "decision", "type": "string"},
+    {"name": "missing_sections", "type": "array"},
+    {"name": "orphan_citations", "type": "array"},
+    {"name": "blockers", "type": "array"}
+  ]
+}
